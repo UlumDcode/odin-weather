@@ -1,0 +1,21 @@
+{
+  "name": "odin-weather",
+  "version": "1.0.0",
+  "description": "The Odin Weather Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UlumDcode/odin-weather.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/UlumDcode/odin-weather/issues"
+  },
+  "homepage": "https://github.com/UlumDcode/odin-weather#readme"
+}
