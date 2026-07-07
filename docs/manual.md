@@ -1468,20 +1468,9 @@ Setelah ini, coba tantang diri kamu dengan fitur tambahan:
 6. **Weather Background** — ganti background sesuai cuaca (cerah: kuning, hujan: biru gelap)
 7. **Animasi Transisi** — pake CSS transition biar perpindahan data lebih halus
 
-## 10.3 Cara Deploy (Biar Bisa Diakses Online)
+## 10.3 Deploy ke GitHub Pages
 
-Kalo udah jadi, kamu bisa deploy gratis pake:
-- **GitHub Pages** — push ke repo, aktifkan Pages di Settings
-- **Netlify** — drag folder `dist/` ke Netlify
-- **Vercel** — hubungkan ke repo GitHub
-
-Sebelum deploy, jalanin:
-```bash
-npm run build
-```
-Terus upload isi folder `dist/`.
-
-> **Catatan penting:** Kalo pake `.env` di Webpack, API Key akan terbaca di file bundle (bocor). Buat production, pake **server-side proxy** — kamu bisa pelajari itu nanti.
+Panduan lengkap buat push ke GitHub dan deploy pake GitHub Pages ada di **BAB 11**.
 
 ---
 
@@ -1500,3 +1489,355 @@ Selamat! Kamu udah berhasil bikin aplikasi weather lengkap dari nol. Ini bukan s
 ---
 
 *— Mentor Odin Weather Project, 2026*
+
+---
+
+# BAB 11 — Push ke GitHub & Deploy ke GitHub Pages
+
+## 11.1 Tujuan
+
+Setelah aplikasi selesai, kamu pasti mau:
+1. **Push ke GitHub** — nyimpen kode di cloud (biar aman, bisa diakses dari mana aja)
+2. **Deploy ke GitHub Pages** — biar aplikasi bisa diakses online (public URL)
+
+## 11.2 Prasyarat
+
+Sebelum mulai, pastikan:
+- Kamu udah punya **akun GitHub** (daftar di https://github.com)
+- Git udah terinstall di komputermu
+
+Cek Git:
+```bash
+git --version
+```
+Kalo muncul versi, berarti udah siap.
+
+Kalo belum pernah pake Git sebelumnya, set identitas dulu:
+```bash
+git config --global user.name "Nama Kamu"
+git config --global user.email "email@kamu.com"
+```
+
+## 11.3 Konsep: Git vs GitHub
+
+**Git** — alat version control di lokal komputer. Nyimpen history perubahan kode.
+**GitHub** — cloud service buat nyimpen repo Git biar bisa diakses online dan kolaborasi.
+
+Alurnya:
+```
+Lokal (komputer kamu)           GitHub (cloud)
+     │                              │
+     │  git add .                    │
+     │  git commit -m "pesan"        │
+     │  git push origin main         │
+     └─────────────────────────────► │
+                                     │
+     │  git pull                     │
+     │◄───────────────────────────── │
+```
+
+## 11.4 Buat Repository di GitHub
+
+**Langkah-langkah:**
+
+1. Buka https://github.com
+2. Login ke akun kamu
+3. Klik tombol **"+"** di pojok kanan atas → **"New repository"**
+4. Isi:
+   - **Repository name:** `odin-weather` (sama kaya nama folder di lokal)
+   - **Description:** (opsional) "Aplikasi Weather dengan Fetch API"
+   - **Public** — biar bisa diakses semua orang
+   - **Jangan centang** "Add a README", "Add .gitignore", atau "Add a license" — karena kita udah punya
+5. Klik **"Create repository"**
+
+Setelah jadi, kamu akan liat halaman dengan instruksi. Pilih bagian:
+
+```
+…or push an existing repository from the command line
+```
+
+Nanti ada 3 perintah:
+```bash
+git remote add origin https://github.com/username/odin-weather.git
+git branch -M main
+git push -u origin main
+```
+
+**Simpan perintah ini** — kita akan pake sebentar lagi.
+
+## 11.5 Cara Kerja `.gitignore` Saat Push
+
+Sebelum push, ingat file `.gitignore` kita sekarang:
+
+```
+node_modules
+.env
+dist
+```
+
+Artinya saat push ke GitHub:
+- ✅ `src/index.html` — ke-push
+- ✅ `src/style.css` — ke-push
+- ✅ `src/script.js` — ke-push
+- ✅ `webpack.config.js` — ke-push
+- ✅ `package.json` — ke-push
+- ✅ `.env.example` — ke-push (ini template, aman)
+- ✅ `docs/manual.md` — ke-push
+- ✅ `README.md` — ke-push
+- ❌ `node_modules/` — **tidak** ke-push (terlalu berat)
+- ❌ `.env` — **tidak** ke-push (API Key rahasia!)
+- ❌ `dist/` — **tidak** ke-push (hasil build, bisa di-build ulang)
+
+> **PENTING:** Cek lagi pake `git status` sebelum push buat pastiin `.env` gak ikut.
+
+## 11.6 Push ke GitHub
+
+Jalanin perintah-perintah ini satu per satu:
+
+```bash
+# Inisialisasi Git (kalo belum pernah)
+git init
+
+# Tambahin semua file yang mau di-commit
+git add .
+
+# Cek file apa aja yang bakal ke-commit
+git status
+```
+
+Kalo ada file `.env` atau `node_modules` muncul di `git status`, **BERHENTI** — cek `.gitignore` dulu.
+
+Kalo aman, lanjut:
+
+```bash
+# Commit dengan pesan
+git commit -m "Inisialisasi proyek Weather App dengan Webpack"
+
+# Tambahin remote GitHub (GANTI URL-nya punya kamu!)
+git remote add origin https://github.com/username/odin-weather.git
+
+# Rename branch jadi main
+git branch -M main
+
+# Push ke GitHub
+git push -u origin main
+```
+
+**Penjelasan tiap perintah:**
+
+| Perintah | Penjelasan |
+|----------|-----------|
+| `git init` | Bikin repo Git baru di folder lokal |
+| `git add .` | Stage semua file (kecuali yang di `.gitignore`) |
+| `git status` | Lihat file apa aja yang siap di-commit |
+| `git commit -m "..."` | Simpan perubahan dengan pesan |
+| `git remote add origin URL` | Hubungkan repo lokal ke repo GitHub |
+| `git branch -M main` | Ganti nama branch default jadi `main` |
+| `git push -u origin main` | Upload kode ke GitHub (pertama kali pake `-u`) |
+
+**Test Point:**
+- Buka repo GitHub kamu di browser
+- Refresh halaman
+- Seharusnya semua file (kecuali `node_modules`, `.env`, `dist`) udah keliatan di GitHub
+
+## 11.7 Deploy ke GitHub Pages
+
+**GitHub Pages** adalah fitur gratis dari GitHub buat hosting website statis. Kita bisa pake buat nyajiin konten dari folder `dist/`.
+
+Tapi karena `dist/` ada di `.gitignore` (gak ke-push), kita perlu cara khusus.
+
+**Solusi:** Pake package `gh-pages` — otomatis build + push folder `dist/` ke branch `gh-pages` di GitHub.
+
+### Langkah 1: Install gh-pages
+
+```bash
+npm install --save-dev gh-pages
+```
+
+### Langkah 2: Update `package.json`
+
+Buka `package.json`, tambahin script baru:
+
+```json
+"scripts": {
+  "build": "webpack",
+  "dev": "webpack-dev-server",
+  "watch": "webpack --watch",
+  "deploy": "npm run build && gh-pages -d dist"
+}
+```
+
+**Penjelasan:**
+- `npm run build` — build dulu (bikin folder `dist/`)
+- `&&` — jalanin perintah berikutnya kalo perintah sebelumnya sukses
+- `gh-pages -d dist` — deploy isi folder `dist/` ke branch `gh-pages`
+
+### Langkah 3: Deploy
+
+```bash
+npm run deploy
+```
+
+Proses yang terjadi:
+1. Webpack build → folder `dist/` terisi
+2. `gh-pages` bikin branch baru `gh-pages` di GitHub
+3. Isi folder `dist/` di-copy ke branch `gh-pages`
+4. Branch `gh-pages` di-push ke GitHub
+
+**Test Point:**
+Kalo sukses, terminal akan ngasih keluaran kayak gini:
+```
+Published
+```
+Atau:
+```
+Done. Your site is published at https://username.github.io/odin-weather/
+```
+
+### Langkah 4: Aktifkan GitHub Pages di Settings
+
+Kalo pake `gh-pages`, kadang kita perlu setting GitHub Pages manual:
+
+1. Buka repo GitHub kamu di browser
+2. Klik tab **Settings** (paling kanan)
+3. Di sidebar kiri, klik **Pages**
+4. Di bagian **Branch**:
+   - Pilih: `gh-pages`
+   - Folder: `/ (root)`
+   - Klik **Save**
+
+Tunggu 1-2 menit. URL aplikasi kamu:
+```
+https://username.github.io/odin-weather/
+```
+
+> **Catatan:** Ganti `username` dengan username GitHub kamu yang asli.
+
+## 11.8 Cara Update Aplikasi
+
+Kalo kamu nambah fitur atau benerin bug, tinggal ulangin 3 langkah ini:
+
+```bash
+git add .
+git commit -m "fix: perbaiki error saat search kota kosong"
+git push origin main
+npm run deploy
+```
+
+Atau biar lebih singkat:
+
+```bash
+git add . && git commit -m "update fitur" && git push && npm run deploy
+```
+
+**Penjelasan:**
+- `git add .` — stage perubahan
+- `git commit -m "..."` — simpan perubahan
+- `git push` — push source code ke GitHub (biar kode aman)
+- `npm run deploy` — deploy ulang ke GitHub Pages (biar URL online update)
+
+## 11.9 Catatan Penting: API Key di GitHub Pages
+
+**Ini PENTING banget:**
+
+Di Bab 4 kita pake `.env` buat nyimpen API Key. Tapi ingat:
+- `.env` gak di-push ke GitHub (aman)
+- TAPI waktu Webpack build, nilai `process.env.API_KEY` diganti dengan API Key asli
+- Jadi file `bundle.js` di folder `dist/` **berisi API Key kamu**
+- `gh-pages` push folder `dist/` ke branch publik
+- **API Key kamu jadi bocor!**
+
+### Solusi Sementara (buat belajar):
+
+Buat keperluan belajar, API Key gratis OpenWeatherMap gak terlalu beresiko. Tapi tetep:
+
+1. Jangan share URL GitHub Pages kamu ke publik kalo belum paham risikonya
+2. Kalo mau aman, bikin **server-side proxy** (topik lanjutan)
+
+### Solusi Profesional (Server-Side Proxy):
+
+Bikin backend kecil (pake Node.js misalnya) yang nerima request dari frontend, trus backend yang panggil API OpenWeatherMap. API Key cuma ada di server.
+
+```
+Browser (Frontend)     →     Server (Backend)     →     OpenWeatherMap API
+     │                            │                           │
+     │  GET /weather/Jakarta      │                           │
+     ├───────────────────────────►│                           │
+     │                            │  GET /data/2.5/weather    │
+     │                            │  ?q=Jakarta&appid=KEY     │
+     │                            ├──────────────────────────►│
+     │                            │                           │
+     │                            │  Response JSON            │
+     │                            │◄──────────────────────────│
+     │  Response JSON             │                           │
+     │◄───────────────────────────┤                           │
+```
+
+Ini bisa kamu pelajari setelah kamu paham backend programming.
+
+## 11.10 Troubleshooting GitHub
+
+### Problem: Push ditolak "failed to push some refs"
+
+**Penyebab:** Remote GitHub punya file yang gak ada di lokal (misal README auto-generated).
+**Solusi:**
+```bash
+git pull origin main --rebase
+git push origin main
+```
+
+### Problem: "src refspec main does not match any"
+
+**Penyebab:** Belum ada commit.
+**Solusi:**
+```bash
+git add .
+git commit -m "first commit"
+git push origin main
+```
+
+### Problem: "fatal: remote origin already exists"
+
+**Penyebab:** Udah pernah tambah remote sebelumnya.
+**Solusi:** Ganti aja:
+```bash
+git remote set-url origin https://github.com/username/odin-weather.git
+```
+
+### Problem: GitHub Pages cuma muncul halaman README
+
+**Penyebab:** Settings Pages belum diatur ke branch `gh-pages`.
+**Solusi:** Ikuti **Langkah 4** di 11.7.
+
+### Problem: `gh-pages` error "Permission denied"
+
+**Penyebab:** Kamu belum login ke GitHub dari terminal.
+**Solusi:**
+```bash
+gh auth login
+```
+Atau pake token:
+1. Buka GitHub → Settings → Developer settings → Personal access tokens
+2. Generate token baru (centang `repo`)
+3. Copy token, simpan di tempat aman
+4. Kalo diminta password pas push, pake token ini
+
+## 11.11 Ringkasan Perintah
+
+| Kapan | Perintah |
+|-------|----------|
+| Pertama kali push | `git add . && git commit -m "init" && git branch -M main && git push -u origin main` |
+| Update kode aja | `git add . && git commit -m "pesan" && git push` |
+| Build + deploy | `npm run deploy` |
+| Semua sekaligus | `git add . && git commit -m "pesan" && git push && npm run deploy` |
+
+## 11.12 Cek Hasil Deploy
+
+1. Buka: `https://username.github.io/odin-weather/`
+2. Aplikasi weather kamu harusnya udah hidup online!
+3. Test search kota "Jakarta" — apakah berfungsi?
+4. Cek di browser DevTools (F12) → tab **Network** — apakah fetch ke OpenWeatherMap sukses?
+
+**Selamat! Aplikasi kamu sekarang udah online dan bisa diakses dari mana aja!** 🎉
+
+---
