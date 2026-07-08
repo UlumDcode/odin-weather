@@ -21,7 +21,7 @@ async function getForecast(city) {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error("forecast tidak tersedia");
+    throw new Error("forecast tidak tersedia atau tidak di temukan");
   }
 
   const data = await response.json();
@@ -76,6 +76,7 @@ function renderForecast(data) {
     const date = new Date(forecast.dt * 1000);
     const dayName = date.toLocaleDateString("id-ID", {
       weekday: "short",
+      day: "2-digit",
     });
     const temp = Math.round(forecast.main.temp);
     const icon = forecast.weather[0].icon;
@@ -102,3 +103,49 @@ getForecast("jakarta")
   .catch((err) => {
     console.error("Gagal memuat data forecast:", err);
   });
+
+async function searchCity(city) {
+  const loading = document.getElementById("loading");
+  const error = document.getElementById("error");
+  const errorMessage = document.getElementById("error-message");
+  const currentWeaterSection = document.getElementById("current-weather");
+  const forecastSection = document.getElementById("forecast");
+
+  error.classList.add("hidden");
+  currentWeaterSection.classList.add("hidden");
+  forecastSection.classList.add("hidden");
+
+  loading.classList.remove("hidden");
+
+  try {
+    const [currentData, forecastData] = await Promise.all([
+      getCurrentWeather(city),
+      getForecast(city),
+    ]);
+
+    renderCurrentWeather(currentData);
+    renderForecast(forecastData);
+  } catch (err) {
+    errorMessage.textContent = err.message;
+    error.classList.remove("hidden");
+  } finally {
+    loading.classList.add("hidden");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("search-form");
+  const input = document.getElementById("search-input");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const city = input.value.trim();
+
+    if (city === "") {
+      retutn;
+    }
+
+    searchCity(city);
+    input.value = "";
+  });
+});
