@@ -48,9 +48,9 @@ function renderCurrentWeather(data) {
   });
   temperature.textContent = `${Math.round(data.main.temp)}°C`;
   description.textContent = data.weather[0].description;
-  feelsLike.textContent = `${Math.round(data.main.feels_like)}°C`;
-  humidity.textContent = `${data.main.humidity}%`;
-  windSpeed.textContent = `${data.wind.speed} m/s`;
+  feelsLike.textContent = ` ${Math.round(data.main.feels_like)}°C`;
+  humidity.textContent = ` ${data.main.humidity}%`;
+  windSpeed.textContent = ` ${data.wind.speed} m/s`;
   weatherIcon.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
   weatherIcon.alt = data.weather[0].description;
 
@@ -64,6 +64,41 @@ getCurrentWeather("jakarta")
   .catch((error) => {
     console.error("Gagal memuat data cuaca:", error);
   });
-// getCurrentWeather("jakarta").then((data) => {
-//   console.log(data);
-// });
+
+function renderForecast(data) {
+  const forecastContainer = document.getElementById("forecast-container");
+  const forecastSection = document.getElementById("forecast");
+
+  forecastContainer.innerHTML = "";
+
+  for (let i = 0; i < data.list.length; i += 7) {
+    const forecast = data.list[i];
+    const date = new Date(forecast.dt * 1000);
+    const dayName = date.toLocaleDateString("id-ID", {
+      weekday: "short",
+    });
+    const temp = Math.round(forecast.main.temp);
+    const icon = forecast.weather[0].icon;
+    const desc = forecast.weather[0].description;
+
+    const card = document.createElement("div");
+    card.className = "forecast-card";
+
+    card.innerHTML = `
+    <p class='day'>${dayName}</p>
+    <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}" />
+    <p class="temp">${temp}°C</p>
+    `;
+
+    forecastContainer.appendChild(card);
+  }
+  forecastSection.classList.remove("hidden");
+}
+
+getForecast("jakarta")
+  .then((data) => {
+    renderForecast(data);
+  })
+  .catch((err) => {
+    console.error("Gagal memuat data forecast:", err);
+  });
